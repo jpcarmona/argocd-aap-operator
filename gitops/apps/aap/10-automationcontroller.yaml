@@ -1,0 +1,11 @@
+# apps/aap/10-automationcontroller.yaml
+apiVersion: automationcontroller.ansible.com/v1beta1
+kind: AutomationController
+metadata:
+  name: aap-controller
+  namespace: aap
+  annotations:
+    argocd.argoproj.io/sync-wave: "10"
+spec:
+  replicas: 1
+  # Ajusta otras opciones: rutas, TLS, storage, etc. según tus requisitos.

@@ -1,0 +1,40 @@
+# operators/aap/04-wait-operator-job.yaml
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: wait-aap-operator-ready
+  namespace: aap
+  annotations:
+    argocd.argoproj.io/hook: PreSync
+    argocd.argoproj.io/hook-delete-policy: HookSucceeded
+    argocd.argoproj.io/sync-wave: "2"
+spec:
+  template:
+    spec:
+      serviceAccountName: default    # o uno con permisos adecuados
+      restartPolicy: Never
+      containers:
+      - name: wait
+        image: registry.access.redhat.com/ubi9/ubi-minimal:latest
+        command: ["/bin/bash","-c"]
+        args:
+          - |
+            set -euo pipefail
+            echo "Esperando CSV del operador AAP en 'Succeeded'..."
+            PKG="ansible-automation-platform-operator"
+            NS="aap"
+            # espera hasta 20 min
+            for i in {1..120}; do
+              CSV=$(oc get csv -n "$NS" -o jsonpath='{.items[?(@.spec.displayName=="Ansible Automation Platform")].metadata.name}')
+              if [ -n "$CSV" ]; then
+                PHASE=$(oc get csv "$CSV" -n "$NS" -o jsonpath='{.status.phase}')
+                echo "CSV=$CSV phase=$PHASE"
+                if [ "$PHASE" = "Succeeded" ]; then
+                  echo "Operador AAP listo."
+                  exit 0
+                fi
+              fi
+              sleep 10
+            done
+            echo "Timeout esperando operador AAP."
+            exit 1

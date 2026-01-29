@@ -1,0 +1,3 @@
+# apps/aap/kustomization.yaml
+resources:
+  - 10-automationcontroller.yaml

@@ -1,0 +1,21 @@
+# cluster/applications/aap-operator.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aap-operator
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://tu.git/repo.git
+    targetRevision: main
+    path: operators/aap
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aap
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true   # crea el NS si no existe

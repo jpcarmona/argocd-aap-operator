@@ -1,0 +1,6 @@
+# operators/aap/kustomization.yaml
+resources:
+  - 01-namespace.yaml
+  - 02-operatorgroup.yaml
+  - 03-subscription.yaml
+  - 04-wait-operator-job.yaml   # se crea en el paso siguiente (opcional)

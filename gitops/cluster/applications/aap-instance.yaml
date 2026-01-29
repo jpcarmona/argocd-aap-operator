@@ -1,0 +1,21 @@
+# cluster/applications/aap-instance.yaml
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: aap-instance
+  namespace: openshift-gitops
+spec:
+  project: default
+  source:
+    repoURL: https://tu.git/repo.git
+    targetRevision: main
+    path: apps/aap
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: aap
+  syncPolicy:
+    automated:
+      prune: false   # normalmente no prunes en CRs de AAP
+      selfHeal: true
+    syncOptions:
+      - RespectIgnoreDifferences=true
